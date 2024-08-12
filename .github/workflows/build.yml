@@ -68,7 +68,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Create ZIP file
-        run: zip -r app/my-spring-boot-app.zip build/libs/
+        run: zip -r app/my-spring-boot-app.zip target/
 
       - name: Update Lambda function
         env:
