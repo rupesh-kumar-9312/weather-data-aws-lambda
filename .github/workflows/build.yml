@@ -71,8 +71,8 @@ jobs:
 
       - name: Update Lambda function
         env:
-          AWS_DEFAULT_REGION: us-east-1
-          AWS_REGION: us-east-1
+          AWS_DEFAULT_REGION: ap-south-1
+          AWS_REGION: ap-south-1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: aws lambda update-function-code --function-name my-spring-boot-lambda --zip-file fileb://app/aws-lambda-1.0-SNAPSHOT-lambda-package.zip
