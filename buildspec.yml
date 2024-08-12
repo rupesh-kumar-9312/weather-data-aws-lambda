@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing Maven
+      - mvn install -DskipTests=true
+  pre_build:
+    commands:
+      - echo Pre-Build Phase
+  build:
+    commands:
+      - echo Build started on `date`
+      - mvn clean package
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - target/aws-lambda-1.0-SNAPSHOT-lambda-package.zip
+  discard-paths: yes

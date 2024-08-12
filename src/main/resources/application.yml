@@ -1,0 +1,11 @@
+#logging:
+#    level:
+#        root: WARN
+config:
+    api:
+        key: eecc9cf7ce200ae5dcf4d50456dc64d4
+aws:
+    dynamodb:
+        endpoint: arn:aws:dynamodb:us-east-1:540307084625:table/WeatherData
+    accessKey: AKIAX3TGP2VI4C7AMWHG
+    secretKey: 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
