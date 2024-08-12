@@ -69,7 +69,7 @@ jobs:
           aws-region: ap-south-1
 
 
-      - name: Update Lambda function
+      - name: Deploy to AWS Lambda
         env:
           AWS_DEFAULT_REGION: ap-south-1
           AWS_REGION: ap-south-1
