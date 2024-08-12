@@ -132,3 +132,4 @@ jobs:
               --function-name $FUNCTION_NAME \
               --s3-bucket $BUCKET_NAME \
               --s3-key $JAR_FILE
+          fi
