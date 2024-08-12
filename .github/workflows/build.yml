@@ -70,4 +70,4 @@ jobs:
 
       - name: Deploy to AWS Lambda
         run: |
-          aws lambda update-function-code --function-name my-spring-boot-lambda --zip-file fileb://app/my-spring-boot-app.jar
+          aws lambda update-function-code --function-name my-spring-boot-lambda --zip-file fileb://app/my-spring-boot-app.zip
