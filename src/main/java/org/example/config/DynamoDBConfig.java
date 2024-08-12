@@ -31,7 +31,7 @@ public class DynamoDBConfig {
     @Bean
     public DynamoDbClient dynamoDbClient() throws URISyntaxException {
         return DynamoDbClient.builder()
-                .region(Region.AP_SOUTH_1)
+                .region(Region.US_EAST_1)
                 .endpointOverride(URI.create("https://dynamodb.ap-south-1.amazonaws.com"))
                 .credentialsProvider(StaticCredentialsProvider.create(getAwsCredentials()))
                 .build();
