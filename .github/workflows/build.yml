@@ -1,135 +1,64 @@
-name: Check DynamoDB table
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - master  # Adjust this to your target branch
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  create-s3-bucket:
-    runs-on: ubuntu-latest
-    # needs: setup-dynamodb
-
-    steps:
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Create S3 bucket
-        run: |
-          BUCKET_NAME="weather-data-api-9312"
-          REGION="us-east-1"
-          aws s3api create-bucket \
-            --bucket $BUCKET_NAME \
-            --region $REGION 
-          aws s3api head-bucket --bucket $BUCKET_NAME --region $REGION || true
-  check-table:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Update with your desired region
+          java-version: '21'
 
-      - name: Check if DynamoDB table exists
-        run: |
-          TABLE_NAME="WeatherData"
-          PRIMARY_KEY="Id"
-          TABLE_EXISTS=$(aws dynamodb list-tables --query "TableNames[?TableName=='$TABLE_NAME']" --output text)
-          if [ -z "$TABLE_EXISTS" ]; then
-            echo "Table does not exist. Creating table..."
-            aws dynamodb create-table \
-              --table-name $TABLE_NAME \
-              --key-schema \
-                AttributeName=$PRIMARY_KEY,KeyType=HASH \
-              --attribute-definitions \
-                AttributeName=$PRIMARY_KEY,AttributeType=S \
-              --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
-          else
-            echo "Table already exists."
-          fi
-  archive-and-upload:
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Package Spring Boot application
+        run: mvn package
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: spring-boot-app
+          path: target/*.jar
+
+  deploy:
     runs-on: ubuntu-latest
-    needs: create-s3-bucket  # Ensure this job runs after the S3 bucket is created
+    needs: build
 
     steps:
-
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Download artifact
+        uses: actions/download-artifact@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout code
-        uses: actions/checkout@v3
+          name: spring-boot-app
+          path: ./app
 
-      - name: Create temporary directory
-        run: |
-          mkdir temp-repo
-      - name: Locate JAR file
-        run: |
-          JAR_FILE=$(find . -name '*.jar')
-          echo "JAR file found: $JAR_FILE"
-          echo "JAR_FILE_PATH=$JAR_FILE" >> $GITHUB_ENV
-      - name: Upload JAR file to S3
-        run: |
-          BUCKET_NAME="weather-data-api-9312"
-          echo "Uploading $JAR_FILE_PATH to s3://$BUCKET_NAME/"
-          aws s3 cp $JAR_FILE_PATH s3://$BUCKET_NAME/ --region us-east-1 --debug
-    # - name: Debug AWS S3 CP
-    #   run: |
-    #     BUCKET_NAME="weather-data-api-9312"
-    #     ARCHIVE_NAME="repository-temp.tar.gz"
-    #     echo "Current directory contents:"
-    #     ls -alh
-    #     echo "Attempting to upload $ARCHIVE_NAME to s3://$BUCKET_NAME/"
-    #     aws s3 cp $ARCHIVE_NAME s3://$BUCKET_NAME/$ARCHIVE_NAME --region us-east-1 --debug
-
-  deploy-lambda:
-    runs-on: ubuntu-latest
-    needs: archive-and-upload
-
-    steps:
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Create or Update Lambda Function
+      - name: Deploy to AWS Lambda
         run: |
-          JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"
-          FUNCTION_NAME="WeatherDataAPI2"
-          JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"  # Ensure this matches the JAR file name in S3
-          BUCKET_NAME="weather-data-api-9312"
-          # Check if Lambda function already exists
-          FUNCTION_EXISTS=$(aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null || echo "not_found")
-          
-          
-          if [ "$FUNCTION_EXISTS" = "not_found" ]; then
-            echo "Creating Lambda function..."
-            aws lambda create-function \
-              --function-name $FUNCTION_NAME \
-              --runtime java21 \
-              --role $ROLE_ARN \
-              --handler com.example.StreamLambdaHandler::handleRequest \
-              --code S3Bucket=$BUCKET_NAME,S3Key=$JAR_FILE \
-              --timeout 60 \
-              --memory-size 512
-          else
-            echo "Updating Lambda function..."
-            aws lambda update-function-code \
-              --function-name $FUNCTION_NAME \
-              --s3-bucket $BUCKET_NAME \
-              --s3-key $JAR_FILE
-          fi
+          aws lambda update-function-code --function-name my-spring-boot-lambda --zip-file fileb://app/my-spring-boot-app.jar
