@@ -7,5 +7,5 @@ config:
 aws:
     dynamodb:
         endpoint: arn:aws:dynamodb:us-east-1:540307084625:table/WeatherData
-    accessKey: AKIAVA5YLES6JMFCU43M
-    secretKey: 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
+    accessKey: AKIAX3TGP2VI4C7AMWHG
+    secretKey: 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
