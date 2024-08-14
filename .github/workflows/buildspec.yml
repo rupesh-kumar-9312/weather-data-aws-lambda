@@ -1,100 +1,29 @@
-name: Create Workflow
-
+name: AWS Lambda CICD
 on:
   push:
-    branches:
-      - master  # Adjust this to your target branch
-
-
-
+    branches: [master]
 jobs:
-  create-s3-bucket:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    # needs: setup-dynamodb
-
     steps:
-    - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-
-    - name: Create S3 bucket
-      run: |
-        BUCKET_NAME="weather-data-api-001"
-        REGION="us-east-1"
-        aws s3api create-bucket \
-          --bucket $BUCKET_NAME \
-          --region $REGION 
-        aws s3api head-bucket --bucket $BUCKET_NAME --region $REGION || true
-    
-  archive-and-upload:
-    runs-on: ubuntu-latest
-    needs: create-s3-bucket  # Ensure this job runs after the S3 bucket is created
-
-    steps:
-
-    - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-        
-    - name: Code Checkout
-      uses: actions/checkout@v3
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-    - name: Build Project
-      run: mvn clean install
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
-  
-  deploy-lambda:
-    runs-on: ubuntu-latest
-    needs: archive-and-upload
-
-    steps:
-    - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-
-    - name: Create or Update Lambda Function
-      run: |
-        JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"
-        FUNCTION_NAME="WeatherDataLambda"
-        ROLE_ARN="arn:aws:iam::540307084625:role/Lambda"
-        # JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"  # Ensure this matches the JAR file name in S3
-        BUCKET_NAME="weather-data-api-001"
-        
-        # Check if Lambda function already exists
-        FUNCTION_EXISTS=$(aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null || echo "not_found")
-        
-        if [ "$FUNCTION_EXISTS" = "not_found" ]; then
-          echo "Creating Lambda function..."
-          aws lambda create-function \
-            --function-name $FUNCTION_NAME \
-            --runtime java17 \
-            --role $ROLE_ARN \
-            --handler org.example.StreamLambdaHandler::handleRequest \
-            --code S3Bucket=$BUCKET_NAME,S3Key=$JAR_FILE \
-            --timeout 60 \
-            --memory-size 512
-        else
-          echo "Updating Lambda function..."
-          aws lambda update-function-code \
-            --function-name $FUNCTION_NAME \
-            --s3-bucket $BUCKET_NAME \
-            --s3-key $JAR_FILE
-        fi
+      - name: Code Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Build Project
+        run: mvn clean install
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+      - name: Create AWS Lambda Function
+        run: |
+          aws lambda create-function --function-name weatherLambda --runtime java17 --handler org.example.StreamLambdaHandler::handleRequest --role arn:aws:iam::345594602684:role/lambdaRole --zip-file fileb://target/aws-lambda-1.0-SNAPSHOT-lambda-package.zip
+        continue-on-error: true
+      - name: Update Lambda Function
+        run: aws lambda update-function-code --function-name weatherLambda --zip-file fileb://target/aws-lambda-1.0-SNAPSHOT-lambda-package.zip
