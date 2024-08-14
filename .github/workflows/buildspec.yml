@@ -22,7 +22,7 @@ jobs:
 
     - name: Create S3 bucket
       run: |
-        BUCKET_NAME="weather-data-api"
+        BUCKET_NAME="weather-data-api-001"
         REGION="us-east-1"
         aws s3api create-bucket \
           --bucket $BUCKET_NAME \
@@ -60,7 +60,7 @@ jobs:
         aws s3 cp $JAR_FILE_PATH s3://$BUCKET_NAME/ --region us-east-1 --debug
     # - name: Debug AWS S3 CP
     #   run: |
-    #     BUCKET_NAME="weather-data-api"
+    #     BUCKET_NAME="weather-data-api-001"
     #     ARCHIVE_NAME="repository-temp.tar.gz"
     #     echo "Current directory contents:"
     #     ls -alh
@@ -87,7 +87,7 @@ jobs:
         FUNCTION_NAME="WeatherDataLambda"
         ROLE_ARN="arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/Lambda"
         # JAR_FILE="weather-data-api.jar"  # Ensure this matches the JAR file name in S3
-        BUCKET_NAME="weather-data-api"
+        BUCKET_NAME="weather-data-api-001"
         
         # Check if Lambda function already exists
         FUNCTION_EXISTS=$(aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null || echo "not_found")
