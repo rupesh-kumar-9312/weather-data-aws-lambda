@@ -3,7 +3,7 @@ name: Create Workflow
 on:
   push:
     branches:
-      - main  # Adjust this to your target branch
+      - master  # Adjust this to your target branch
 
 
 
