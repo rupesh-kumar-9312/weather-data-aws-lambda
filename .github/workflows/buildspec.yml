@@ -55,7 +55,7 @@ jobs:
         echo "JAR_FILE_PATH=$JAR_FILE" >> $GITHUB_ENV
     - name: Upload JAR file to S3
       run: |
-        BUCKET_NAME="weather-data-api"
+        BUCKET_NAME="weather-data-api-001"
         echo "Uploading $JAR_FILE_PATH to s3://$BUCKET_NAME/"
         aws s3 cp $JAR_FILE_PATH s3://$BUCKET_NAME/ --region us-east-1 --debug
     # - name: Debug AWS S3 CP
