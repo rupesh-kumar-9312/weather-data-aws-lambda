@@ -74,7 +74,7 @@ jobs:
       run: |
         JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"
         FUNCTION_NAME="WeatherDataLambda"
-        ROLE_ARN="arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/Lambda"
+        ROLE_ARN="arn:aws:iam::540307084625:role/Lambda"
         # JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"  # Ensure this matches the JAR file name in S3
         BUCKET_NAME="weather-data-api-001"
         
