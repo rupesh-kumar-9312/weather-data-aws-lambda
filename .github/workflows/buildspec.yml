@@ -42,32 +42,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
         
-    - name: Checkout code
+    - name: Code Checkout
       uses: actions/checkout@v3
-
-    - name: Create temporary directory
-      run: |
-        mkdir temp-repo
-    - name: Locate JAR file
-      run: |
-        JAR_FILE=$(find . -name '*.zip')
-        echo "JAR file found: $JAR_FILE"
-        echo "JAR_FILE_PATH=$JAR_FILE" >> $GITHUB_ENV
-    - name: Upload JAR file to S3
-      run: |
-        BUCKET_NAME="weather-data-api-001"
-        echo "Uploading $JAR_FILE_PATH to s3://$BUCKET_NAME/"
-        aws s3 cp $JAR_FILE_PATH s3://$BUCKET_NAME/ --region us-east-1 --debug
-    # - name: Debug AWS S3 CP
-    #   run: |
-    #     BUCKET_NAME="weather-data-api-001"
-    #     ARCHIVE_NAME="repository-temp.tar.gz"
-    #     echo "Current directory contents:"
-    #     ls -alh
-    #     echo "Attempting to upload $ARCHIVE_NAME to s3://$BUCKET_NAME/"
-    #     aws s3 cp $ARCHIVE_NAME s3://$BUCKET_NAME/$ARCHIVE_NAME --region us-east-1 --debug
-  
-  
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    - name: Build Project
+      run: mvn clean install
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
   
   deploy-lambda:
     runs-on: ubuntu-latest
@@ -83,7 +72,7 @@ jobs:
 
     - name: Create or Update Lambda Function
       run: |
-        JAR_FILE="WeatherDataApi-1.0-SNAPSHOT-lambda-package.zip"
+        JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"
         FUNCTION_NAME="WeatherDataLambda"
         ROLE_ARN="arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/Lambda"
         # JAR_FILE="weather-data-api.jar"  # Ensure this matches the JAR file name in S3
