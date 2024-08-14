@@ -21,7 +21,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-      - name: Create AWS Lambda Function
+      # - name: Create AWS Lambda Function
         # run: |
         #   aws lambda create-function --function-name weatherLambda --runtime java17 --handler org.example.StreamLambdaHandler::handleRequest --role arn:aws:iam::540307084625:role/lambdaRole --zip-file fileb://target/aws-lambda-1.0-SNAPSHOT-lambda-package.zip
         # continue-on-error: true
