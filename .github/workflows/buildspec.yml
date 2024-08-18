@@ -41,6 +41,11 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
+      - name: Print JAR file location
+        run: |
+          JAR_FILE=$(find target -name "*.zip" | head -n 1)
+          echo "JAR file location: $JAR_FILE"
+
       - name: Archive JAR file
         run: |
           mkdir -p build/distributions
