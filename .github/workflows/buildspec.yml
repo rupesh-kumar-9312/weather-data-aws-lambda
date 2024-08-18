@@ -46,7 +46,7 @@ jobs:
           mkdir -p build/distributions
 
           # Copy the zip file to the build/distributions directory
-          cp /home/runner/work/weather-data-aws-lambda/weather-data-aws-lambda/target/aws-lambda-1.0-SNAPSHOT-lambda-package.zip build/distributions/
+          cp /target/aws-lambda-1.0-SNAPSHOT-lambda-package.zip build/distributions/
 
           # Change to the build/distributions directory
           cd build/distributions
