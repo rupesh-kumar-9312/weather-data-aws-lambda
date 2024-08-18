@@ -146,6 +146,7 @@ jobs:
           # JAR_FILE="weather-data-api.jar"  # Ensure this matches the JAR file name in S3
           BUCKET_NAME="weather-data-api-001"
           
+          
           # Check if Lambda function already exists
           FUNCTION_EXISTS=$(aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null || echo "not_found")
           
