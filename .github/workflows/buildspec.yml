@@ -108,14 +108,14 @@ jobs:
 #          mkdir temp-repo
       - name: Locate JAR file
         run: |
-          JAR_FILE=$(find . -name '*.zip')
-          echo "ZIP file found: $JAR_FILE"
-          echo "ZIP_FILE_PATH=$JAR_FILE" >> $GITHUB_ENV
+          JAR_FILE=$(find target -name "*.zip" | head -n 1)
+          echo "JAR file location: $JAR_FILE"
+          echo "JAR_FILE=$JAR_FILE" >> $GITHUB_ENV
       - name: Upload JAR file to S3
         run: |
           BUCKET_NAME="weather-data-api-001"
-          echo "Uploading $ZIP_FILE_PATH to s3://$BUCKET_NAME/"
-          aws s3 cp $JAR_FILE_PATH s3://$BUCKET_NAME/ --region us-east-1 --debug
+          echo "Uploading $JAR_FILE to s3://$BUCKET_NAME/"
+          aws s3 cp $JAR_FILE s3://$BUCKET_NAME/ --region us-east-1 --debug
     # - name: Debug AWS S3 CP
     #   run: |
     #     BUCKET_NAME="weather-data-api"
