@@ -44,7 +44,7 @@ jobs:
       - name: Archive JAR file
         run: |
           mkdir -p build/distributions
-          cp /aws-lambda-1.0-SNAPSHOT-lambda-package.zip build/distributions/
+          cp aws-lambda-1.0-SNAPSHOT-lambda-package.zip build/distributions/
           cd build/distributions
           zip -r aws-lambda-1.0-SNAPSHOT-lambda-package.zip *.jar
           echo "ZIP_FILE_PATH=$(pwd)/aws-lambda-1.0-SNAPSHOT-lambda-package.zip" >> $GITHUB_ENV
