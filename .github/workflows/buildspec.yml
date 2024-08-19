@@ -100,9 +100,9 @@ jobs:
           # Output the path of the zip file to the GitHub environment variable
           echo "ZIP_FILE_PATH=$(pwd)/aws-lambda-1.0-SNAPSHOT-lambda-package.zip" >> $GITHUB_ENV
 
-#      - name: Create temporary directory
-#        run: |
-#          mkdir temp-repo
+      #      - name: Create temporary directory
+      #        run: |
+      #          mkdir temp-repo
       - name: Locate JAR file
         run: |
           JAR_FILE=$(find target -name "*.zip" | head -n 1)
@@ -140,7 +140,7 @@ jobs:
         run: |
           JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"
           FUNCTION_NAME="WeatherDataLambda"
-          ROLE_ARN="arn:aws:iam::540307084625:role/lamda-basic-role"
+          ROLE_ARN="arn:aws:iam::540307084625:role/service-role/WeatherDataLambda-role-evlps1z7"
           # JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"  # Ensure this matches the JAR file name in S3
           BUCKET_NAME="weather-data-api-001"
           
@@ -161,7 +161,7 @@ jobs:
           else
             echo "Updating Lambda function..."
             aws lambda update-function-code \
-              --function-name $FUNCTION_NAME \          
+              --function-name $FUNCTION_NAME \
               --s3-bucket $BUCKET_NAME \
               --s3-key $JAR_FILE
           fi
