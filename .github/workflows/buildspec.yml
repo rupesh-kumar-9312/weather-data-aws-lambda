@@ -152,7 +152,7 @@ jobs:
             echo "Creating Lambda function..."
             aws lambda create-function \
               --function-name $FUNCTION_NAME \
-              --runtime java17 \
+              --runtime java21 \
               --role $ROLE_ARN \
               --handler org.example.StreamLambdaHandler::handleRequest \
               --code S3Bucket=$BUCKET_NAME,S3Key=$JAR_FILE \
