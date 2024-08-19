@@ -161,8 +161,7 @@ jobs:
           else
             echo "Updating Lambda function..."
             aws lambda update-function-code \
-              --function-name $FUNCTION_NAME \
-              --handler org.example.StreamLambdaHandler::handleRequest \          
+              --function-name $FUNCTION_NAME \          
               --s3-bucket $BUCKET_NAME \
               --s3-key $JAR_FILE
           fi
