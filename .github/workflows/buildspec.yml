@@ -140,7 +140,7 @@ jobs:
         run: |
           JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"
           FUNCTION_NAME="WeatherDataLambda"
-          ROLE_ARN="arn:aws:iam::540307084625:role/service-role/WeatherDataLambda-role-evlps1z7"
+          ROLE_ARN="arn:aws:iam::540307084625:role/lamda-basic-role"
           # JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"  # Ensure this matches the JAR file name in S3
           BUCKET_NAME="weather-data-api-001"
           
@@ -162,6 +162,7 @@ jobs:
             echo "Updating Lambda function..."
             aws lambda update-function-code \
               --function-name $FUNCTION_NAME \
+              --handler org.example.StreamLambdaHandler::handleRequest \          
               --s3-bucket $BUCKET_NAME \
               --s3-key $JAR_FILE
           fi
