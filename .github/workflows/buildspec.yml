@@ -142,11 +142,10 @@ jobs:
         run: |
           JAR_FILE="aws-lambda-1.0-SNAPSHOT-lambda-package.zip"
           FUNCTION_NAME="WeatherDataLambda"
-#          ROLE_ARN="arn:aws:iam::540307084625:role/Lambda"
+          ROLE_ARN="arn:aws:iam::540307084625:role/service-role/WeatherDataLambda-role-evlps1z7"
           # JAR_FILE="weather-data-api.jar"  # Ensure this matches the JAR file name in S3
           BUCKET_NAME="weather-data-api-001"
-          
-          
+        
           # Check if Lambda function already exists
           FUNCTION_EXISTS=$(aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null || echo "not_found")
           
