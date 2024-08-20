@@ -22,10 +22,8 @@ public class WeatherFunction {
         this.objectMapper = objectMapper;
     }
 
-    @Bean
-    public Function<String, Mono<String>> getWeather(String auth) {
-//        return city -> weatherService.getWeather(city);
-        return city -> weatherService.getWeather(city,auth)
+    public Mono<String> getWeather(String city, String auth) {
+        return weatherService.getWeather(city, auth)
                 .flatMap(response -> {
                     try {
                         JsonNode root = objectMapper.readTree(response);

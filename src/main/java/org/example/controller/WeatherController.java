@@ -18,7 +18,7 @@ public class WeatherController {
 
     @GetMapping("/{city}")
     public Mono<String> getWeatherData(@PathVariable String city, @RequestHeader("x-auth") String auth){
-        return weatherFunction.getWeather(auth).apply(city);
+        return weatherService.saveWeatherData(city,auth);
     }
 
 }
