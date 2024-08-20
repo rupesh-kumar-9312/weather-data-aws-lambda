@@ -5,7 +5,6 @@ import org.example.service.WeatherFunction;
 import org.example.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -22,7 +21,7 @@ public class PingController {
 
     @RequestMapping(path = "/ping/weather", method = RequestMethod.GET)
     public Mono<String> getWeatherData(@PathVariable String city){
-        return weatherFunction.getWeather().apply("agra");
+        return weatherFunction.getWeather(auth).apply("agra");
     }
 
     @RequestMapping(path = "/ping", method = RequestMethod.GET)

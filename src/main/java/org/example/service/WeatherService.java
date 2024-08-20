@@ -18,12 +18,12 @@ public class WeatherService {
         this.webClient = webClientBuilder.baseUrl("https://api.openweathermap.org/data/2.5/").build();
     }
 
-    public Mono<String> getWeather(String city) {
+    public Mono<String> getWeather(String city, String auth) {
         return this.webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("weather")
                         .queryParam("q", city)
-                        .queryParam("appid", apiKey)
+                        .queryParam("appid", auth)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);

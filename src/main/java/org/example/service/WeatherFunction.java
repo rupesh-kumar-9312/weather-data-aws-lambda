@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -24,9 +23,9 @@ public class WeatherFunction {
     }
 
     @Bean
-    public Function<String, Mono<String>> getWeather() {
+    public Function<String, Mono<String>> getWeather(String auth) {
 //        return city -> weatherService.getWeather(city);
-        return city -> weatherService.getWeather(city)
+        return city -> weatherService.getWeather(city,auth)
                 .flatMap(response -> {
                     try {
                         JsonNode root = objectMapper.readTree(response);
