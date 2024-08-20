@@ -20,9 +20,9 @@ public class PingController {
     @Autowired
     private WeatherFunction weatherFunction;
 
-    @RequestMapping(path = "/ping/{city}", method = RequestMethod.GET)
+    @RequestMapping(path = "/ping/weather", method = RequestMethod.GET)
     public Mono<String> getWeatherData(@PathVariable String city){
-        return weatherFunction.getWeather().apply(city);
+        return weatherFunction.getWeather().apply("agra");
     }
 
     @RequestMapping(path = "/ping", method = RequestMethod.GET)
