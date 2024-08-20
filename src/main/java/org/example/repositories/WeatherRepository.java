@@ -20,7 +20,7 @@ public class WeatherRepository {
 
     public void saveWeatherData(WeatherData weatherData) {
         Map<String, AttributeValue> item = new HashMap<>();
-        item.put("id", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
+        item.put("Id", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
         item.put("City", AttributeValue.builder().s(weatherData.getCity()).build());
         item.put("Description", AttributeValue.builder().s(weatherData.getDescription()).build());
         item.put("Temperature", AttributeValue.builder().n(String.valueOf(weatherData.getTemperature())).build());

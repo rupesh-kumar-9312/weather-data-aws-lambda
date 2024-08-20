@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -30,7 +31,6 @@ public class WeatherFunction {
                     try {
                         JsonNode root = objectMapper.readTree(response);
                         WeatherData weatherData = new WeatherData();
-//                        weatherData.setId(root.path("weather").get(0).path("id").asText());
                         weatherData.setCity(root.path("name").asText());
                         weatherData.setDescription(root.path("weather").get(0).path("description").asText());
                         weatherData.setTemperature(root.path("main").path("temp").asDouble());
