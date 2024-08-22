@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.models.WeatherData;
 import org.example.repositories.WeatherRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,9 +11,6 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class WeatherService {
-
-    @Value("${config.api.key}")
-    private String apiKey;
 
     private final WeatherRepository weatherRepository;
     private final ObjectMapper objectMapper;
